@@ -1,7 +1,14 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Button, StyleSheet, Text, View } from 'react-native';
+import { useCart } from '../contexts/CartContext';
 
-export default function DetalheScreen({ route }) {
+export default function DetalheScreen({ route, navigation }) {
   const { filme } = route.params;
+  const { adicionar } = useCart();
+
+  function handleAdicionar() {
+    adicionar(filme);
+    navigation.navigate('Carrinho');
+  }
 
   return (
     <View style={styles.container}>
@@ -10,6 +17,10 @@ export default function DetalheScreen({ route }) {
       <Text style={styles.info}>Ano: {filme.ano}</Text>
       <Text style={styles.info}>Nota: {filme.nota}</Text>
       <Text style={styles.descricao}>{filme.descricao}</Text>
+
+      <View style={styles.botao}>
+        <Button title="Adicionar" onPress={handleAdicionar} />
+      </View>
     </View>
   );
 }
@@ -33,5 +44,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     marginTop: 16,
+  },
+  botao: {
+    marginTop: 24,
   },
 });

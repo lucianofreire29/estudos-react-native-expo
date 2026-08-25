@@ -51,7 +51,16 @@ const filmes = [
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.titulo}>Lista de filmes</Text>
+      <View style={styles.cabecalho}>
+        <Text style={styles.titulo}>Lista de filmes</Text>
+
+        <TouchableOpacity
+          style={styles.botaoCarrinho}
+          onPress={() => navigation.navigate('Carrinho')}
+        >
+          <Text style={styles.textoBotaoCarrinho}>Carrinho</Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
         data={filmes}
@@ -77,10 +86,25 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: '#f5f5f5',
   },
+  cabecalho: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: 16,
+  },
   titulo: {
     fontSize: 26,
     fontWeight: 'bold',
-    marginBottom: 16,
+  },
+  botaoCarrinho: {
+    backgroundColor: '#1f6feb',
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+  textoBotaoCarrinho: {
+    color: '#ffffff',
+    fontWeight: 'bold',
   },
   card: {
     backgroundColor: '#ffffff',
