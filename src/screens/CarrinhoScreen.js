@@ -1,13 +1,17 @@
 import { Button, FlatList, StyleSheet, Text, View } from 'react-native';
 import { useCart } from '../contexts/CartContext';
 
-export default function CarrinhoScreen() {
+export default function CarrinhoScreen({ navigation }) {
   const { itens, remover } = useCart();
 
   if (itens.length === 0) {
     return (
       <View style={styles.vazio}>
         <Text style={styles.vazioTexto}>O carrinho está vazio.</Text>
+        <Button
+          title="Voltar para filmes"
+          onPress={() => navigation.navigate('Home')}
+        />
       </View>
     );
   }
@@ -30,6 +34,11 @@ export default function CarrinhoScreen() {
             <Button title="Remover" onPress={() => remover(item.id)} />
           </View>
         )}
+      />
+
+      <Button
+        title="Voltar para filmes"
+        onPress={() => navigation.navigate('Home')}
       />
     </View>
   );
@@ -64,8 +73,10 @@ const styles = StyleSheet.create({
   },
   vazio: {
     flex: 1,
+    padding: 16,
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 16,
   },
   vazioTexto: {
     fontSize: 18,
