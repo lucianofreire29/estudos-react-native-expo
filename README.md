@@ -1,6 +1,6 @@
 # App de Filmes — React Native + Expo
 
-Projeto desenvolvido como exercício do curso utilizando **React Native**, **Expo** e **React Navigation**.
+Projeto desenvolvido como exercício do curso utilizando **React Native**, **Expo**, **React Navigation** e **Context API**.
 
 ## Atividade 1 — Navegação entre telas
 
@@ -15,14 +15,31 @@ O objetivo desta atividade é praticar navegação entre telas utilizando Stack 
 - Exibição de título, gênero, ano, nota e descrição na tela de detalhes;
 - Retorno para a lista de filmes pelo Stack Navigator.
 
+## Atividade 2 — Carrinho com Context API
+
+A segunda atividade reaproveita o aplicativo de filmes e adiciona um estado global para o carrinho utilizando a Context API do React.
+
+### Funcionalidades
+
+- `CartContext` para compartilhar o estado do carrinho entre as telas;
+- Adição de filmes ao carrinho pela tela de detalhes;
+- Tela própria para visualizar o carrinho;
+- Remoção de filmes do carrinho;
+- Acesso direto ao carrinho pela tela inicial;
+- Mensagem quando o carrinho está vazio;
+- Botão **Voltar para filmes** na tela do carrinho.
+
 ## Estrutura principal
 
 ```text
 App.js
 src/
+├── contexts/
+│   └── CartContext.js
 └── screens/
     ├── HomeScreen.js
-    └── DetalheScreen.js
+    ├── DetalheScreen.js
+    └── CarrinhoScreen.js
 ```
 
 ## Tecnologias utilizadas
@@ -31,6 +48,7 @@ src/
 - Expo
 - React Navigation
 - Native Stack Navigator
+- Context API
 
 ## Como executar
 
@@ -48,7 +66,9 @@ npx expo start
 
 Depois, abra o aplicativo pelo **Expo Go** e leia o QR Code exibido no terminal.
 
-## Fluxo da Atividade 1
+## Fluxo das atividades
+
+### Atividade 1
 
 ```text
 Lista de filmes
@@ -60,6 +80,22 @@ navigation.navigate('Detalhe', { filme: item })
 Tela de detalhes
       ↓
 const { filme } = route.params
+```
+
+### Atividade 2
+
+```text
+Lista de filmes
+      ↓
+Detalhes do filme
+      ↓
+Adicionar ao carrinho
+      ↓
+CartContext
+      ↓
+Carrinho
+      ↓
+Remover filme ou voltar para filmes
 ```
 
 A aplicação foi testada em dispositivo Android utilizando Expo Go.
