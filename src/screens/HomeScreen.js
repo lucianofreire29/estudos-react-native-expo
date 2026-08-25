@@ -1,66 +1,77 @@
-import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { useEffect, useState } from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 
-const filmes = [
-  {
-    id: '1',
-    titulo: 'Interestelar',
-    genero: 'Ficção Científica',
-    ano: 2014,
-    nota: 8.7,
-    descricao:
-      'Uma equipe de astronautas viaja pelo espaço em busca de um novo lar para a humanidade.',
-  },
-  {
-    id: '2',
-    titulo: 'O Poderoso Chefão',
-    genero: 'Drama / Crime',
-    ano: 1972,
-    nota: 9.2,
-    descricao:
-      'A história da família Corleone e sua influência no mundo do crime organizado.',
-  },
-  {
-    id: '3',
-    titulo: 'Matrix',
-    genero: 'Ficção Científica',
-    ano: 1999,
-    nota: 8.7,
-    descricao:
-      'Um programador descobre que a realidade em que vive pode não ser o que parece.',
-  },
-  {
-    id: '4',
-    titulo: 'Gladiador',
-    genero: 'Ação / Drama',
-    ano: 2000,
-    nota: 8.5,
-    descricao:
-      'Um general romano busca vingança após perder sua família e sua posição.',
-  },
-  {
-    id: '5',
-    titulo: 'Parasita',
-    genero: 'Drama / Suspense',
-    ano: 2019,
-    nota: 8.5,
-    descricao:
-      'Uma família encontra uma oportunidade inesperada ao se aproximar de uma família rica.',
-  },
-];
+import { listarFilmes } from '../services/tvmaze';
 
 export default function HomeScreen({ navigation }) {
+  const [filmes, setFilmes] = useState([]);
+  const [carregando, setCarregando] = useState(true);
+  const [erro, setErro] = useState(null);
+
+  async function carregarFilmes() {
+    try {
+      setCarregando(true);
+      setErro(null);
+
+      const dados = await listarFilmes();
+      setFilmes(dados);
+    } catch (e) {
+      setErro(e.message || 'Ocorreu um erro ao buscar os filmes.');
+    } finally {
+      setCarregando(false);
+    }
+  }
+
+  useEffect(() => {
+    carregarFilmes();
+  }, []);
+
+  if (carregando) {
+    return (
+      <View style={styles.estadoCentralizado}>
+        <ActivityIndicator size="large" />
+        <Text style={styles.mensagemEstado}>Carregando filmes...</Text>
+      </View>
+    );
+  }
+
+  if (erro) {
+    return (
+      <View style={styles.estadoCentralizado}>
+        <Text style={styles.erro}>Erro: {erro}</Text>
+        <TouchableOpacity style={styles.botaoRecarregar} onPress={carregarFilmes}>
+          <Text style={styles.textoBotao}>Recarregar</Text>
+        </TouchableOpacity>
+      </View>
+    );
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.cabecalho}>
-        <Text style={styles.titulo}>Lista de filmes</Text>
+        <View>
+          <Text style={styles.titulo}>Lista de filmes</Text>
+          <Text style={styles.fonte}>Dados fornecidos por TVmaze</Text>
+        </View>
 
         <TouchableOpacity
           style={styles.botaoCarrinho}
           onPress={() => navigation.navigate('Carrinho')}
         >
-          <Text style={styles.textoBotaoCarrinho}>Carrinho</Text>
+          <Text style={styles.textoBotao}>Carrinho</Text>
         </TouchableOpacity>
       </View>
+
+      <TouchableOpacity style={styles.botaoRecarregarTopo} onPress={carregarFilmes}>
+        <Text style={styles.textoBotao}>Recarregar</Text>
+      </TouchableOpacity>
 
       <FlatList
         data={filmes}
@@ -73,6 +84,7 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.nomeFilme}>{item.titulo}</Text>
             <Text style={styles.info}>{item.genero}</Text>
             <Text style={styles.info}>{item.ano}</Text>
+            <Text style={styles.info}>Nota: {item.nota}</Text>
           </TouchableOpacity>
         )}
       />
@@ -90,11 +102,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 16,
+    marginBottom: 12,
   },
   titulo: {
     fontSize: 26,
     fontWeight: 'bold',
+  },
+  fonte: {
+    fontSize: 12,
+    marginTop: 4,
   },
   botaoCarrinho: {
     backgroundColor: '#1f6feb',
@@ -102,7 +118,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 8,
   },
-  textoBotaoCarrinho: {
+  botaoRecarregarTopo: {
+    alignSelf: 'flex-start',
+    backgroundColor: '#1f6feb',
+    paddingVertical: 8,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+    marginBottom: 14,
+  },
+  botaoRecarregar: {
+    backgroundColor: '#1f6feb',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    marginTop: 16,
+  },
+  textoBotao: {
     color: '#ffffff',
     fontWeight: 'bold',
   },
@@ -120,5 +151,19 @@ const styles = StyleSheet.create({
   info: {
     fontSize: 14,
     marginBottom: 2,
+  },
+  estadoCentralizado: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+  },
+  mensagemEstado: {
+    marginTop: 12,
+    fontSize: 16,
+  },
+  erro: {
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
