@@ -1,5 +1,6 @@
-import { Button, StyleSheet, Text, View } from 'react-native';
+import { Alert, Button, StyleSheet, Text, View } from 'react-native';
 import { useCart } from '../contexts/CartContext';
+import { removerFilme } from '../services/api';
 
 export default function DetalheScreen({ route, navigation }) {
   const { filme } = route.params;
@@ -8,6 +9,34 @@ export default function DetalheScreen({ route, navigation }) {
   function handleAdicionar() {
     adicionar(filme);
     navigation.navigate('Carrinho');
+  }
+
+  function handleExcluir() {
+    Alert.alert(
+      'Excluir filme',
+      `Tem certeza que deseja excluir "${filme.titulo}"?`,
+      [
+        {
+          text: 'Cancelar',
+          style: 'cancel',
+        },
+        {
+          text: 'Excluir',
+          style: 'destructive',
+          onPress: async () => {
+            try {
+              await removerFilme(filme.id);
+              navigation.navigate('Home');
+            } catch (erro) {
+              Alert.alert(
+                'Erro',
+                erro.message || 'Não foi possível excluir o filme.'
+              );
+            }
+          },
+        },
+      ]
+    );
   }
 
   return (
@@ -20,6 +49,17 @@ export default function DetalheScreen({ route, navigation }) {
 
       <View style={styles.botao}>
         <Button title="Adicionar" onPress={handleAdicionar} />
+      </View>
+
+      <View style={styles.botao}>
+        <Button
+          title="Editar filme"
+          onPress={() => navigation.navigate('EditarFilme', { filme })}
+        />
+      </View>
+
+      <View style={styles.botao}>
+        <Button title="Excluir filme" color="#b42318" onPress={handleExcluir} />
       </View>
     </View>
   );
@@ -46,6 +86,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   botao: {
-    marginTop: 24,
+    marginTop: 16,
   },
 });
