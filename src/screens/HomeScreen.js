@@ -70,9 +70,18 @@ export default function HomeScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity style={styles.botaoRecarregarTopo} onPress={carregarFilmes}>
-        <Text style={styles.textoBotao}>Recarregar</Text>
-      </TouchableOpacity>
+      <View style={styles.acoes}>
+        <TouchableOpacity
+          style={styles.botaoAcao}
+          onPress={() => navigation.navigate('CadastroFilme')}
+        >
+          <Text style={styles.textoBotao}>Cadastrar filme</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.botaoAcao} onPress={carregarFilmes}>
+          <Text style={styles.textoBotao}>Recarregar</Text>
+        </TouchableOpacity>
+      </View>
 
       {filmes.length === 0 ? (
         <View style={styles.estadoCentralizado}>
@@ -125,13 +134,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     borderRadius: 8,
   },
-  botaoRecarregarTopo: {
-    alignSelf: 'flex-start',
+  acoes: {
+    flexDirection: 'row',
+    gap: 10,
+    marginBottom: 14,
+  },
+  botaoAcao: {
     backgroundColor: '#1f6feb',
-    paddingVertical: 8,
+    paddingVertical: 9,
     paddingHorizontal: 14,
     borderRadius: 8,
-    marginBottom: 14,
   },
   botaoRecarregar: {
     backgroundColor: '#1f6feb',
