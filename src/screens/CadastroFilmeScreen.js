@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Alert,
   ScrollView,
@@ -7,21 +7,21 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { criarFilme } from '../services/api';
+import { criarFilme } from "../services/firestore";
 
 export default function CadastroFilmeScreen({ navigation }) {
-  const [titulo, setTitulo] = useState('');
-  const [genero, setGenero] = useState('');
-  const [ano, setAno] = useState('');
-  const [nota, setNota] = useState('');
-  const [descricao, setDescricao] = useState('');
+  const [titulo, setTitulo] = useState("");
+  const [genero, setGenero] = useState("");
+  const [ano, setAno] = useState("");
+  const [nota, setNota] = useState("");
+  const [descricao, setDescricao] = useState("");
   const [salvando, setSalvando] = useState(false);
 
   async function handleSalvar() {
     if (!titulo.trim()) {
-      Alert.alert('Atenção', 'Informe o título do filme.');
+      Alert.alert("Atenção", "Informe o título do filme.");
       return;
     }
 
@@ -32,14 +32,17 @@ export default function CadastroFilmeScreen({ navigation }) {
         titulo: titulo.trim(),
         genero: genero.trim(),
         ano: ano ? Number(ano) : null,
-        nota: nota ? Number(nota.replace(',', '.')) : null,
+        nota: nota ? Number(nota.replace(",", ".")) : null,
         descricao: descricao.trim(),
       });
 
-      Alert.alert('Sucesso', 'Filme cadastrado com sucesso.');
-      navigation.navigate('Home');
+      Alert.alert("Sucesso", "Filme cadastrado com sucesso.");
+      navigation.navigate("Home");
     } catch (erro) {
-      Alert.alert('Erro', erro.message || 'Não foi possível cadastrar o filme.');
+      Alert.alert(
+        "Erro",
+        erro.message || "Não foi possível cadastrar o filme.",
+      );
     } finally {
       setSalvando(false);
     }
@@ -97,7 +100,7 @@ export default function CadastroFilmeScreen({ navigation }) {
         disabled={salvando}
       >
         <Text style={styles.textoBotao}>
-          {salvando ? 'Salvando...' : 'Cadastrar filme'}
+          {salvando ? "Salvando..." : "Cadastrar filme"}
         </Text>
       </TouchableOpacity>
     </ScrollView>
@@ -107,16 +110,16 @@ export default function CadastroFilmeScreen({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   label: {
     fontSize: 15,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
@@ -126,18 +129,18 @@ const styles = StyleSheet.create({
     minHeight: 110,
   },
   botao: {
-    backgroundColor: '#1f6feb',
+    backgroundColor: "#1f6feb",
     padding: 14,
     borderRadius: 8,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 4,
   },
   botaoDesabilitado: {
     opacity: 0.6,
   },
   textoBotao: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontWeight: "bold",
     fontSize: 16,
   },
 });
