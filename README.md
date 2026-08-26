@@ -1,6 +1,6 @@
 # App de Filmes — React Native + Expo
 
-Projeto desenvolvido como exercício do curso utilizando **React Native**, **Expo**, **React Navigation**, **Context API**, consumo de **API REST** e integração com banco de dados PostgreSQL no **Neon**.
+Projeto desenvolvido como exercício do curso utilizando **React Native**, **Expo**, **React Navigation**, **Context API**, consumo de **API REST**, integração com banco de dados PostgreSQL no **Neon** e persistência em tempo real com **Firebase Firestore**.
 
 ## Atividade 1 — Navegação entre telas
 
@@ -85,6 +85,39 @@ PostgreSQL no Neon
 
 O aplicativo não possui credenciais do banco de dados. A variável `DATABASE_URL` fica somente no ambiente do backend e não é versionada no GitHub.
 
+## Atividade 5 — Firestore em tempo real
+
+A quinta atividade substitui o acesso aos dados do Neon pelo **Firebase Firestore**. O aplicativo passa a acessar o banco diretamente utilizando o SDK do Firebase para JavaScript.
+
+### Funcionalidades
+
+- Listagem de filmes armazenados no Firestore;
+- Cadastro de novos filmes;
+- Edição de filmes existentes;
+- Exclusão de filmes;
+- Atualização automática da lista utilizando `onSnapshot`;
+- Tratamento de carregamento e erro;
+- Configuração do Firebase através de variáveis de ambiente;
+- Integração mantida com navegação e carrinho das atividades anteriores.
+
+### Fluxo da Atividade 5
+
+```text
+Expo Go
+   ↓
+Firebase SDK
+   ↓
+Cloud Firestore
+   ↓
+onSnapshot
+   ↓
+Atualização em tempo real
+```
+
+### Comparação: Neon x Firestore
+
+Na Atividade 4, utilizando o Neon, foi necessário criar uma API própria com Node.js e Express para fazer a comunicação entre o aplicativo e o banco PostgreSQL. No Firestore, o aplicativo consegue acessar o banco diretamente através do SDK do Firebase, tornando a implementação mais simples. Outra diferença percebida foi a atualização em tempo real com `onSnapshot`, pois as alterações feitas no Firestore aparecem automaticamente no aplicativo, enquanto na API com Neon era necessário realizar uma nova requisição para atualizar os dados.
+
 ## Estrutura principal
 
 ```text
@@ -95,6 +128,8 @@ backend/
 ├── package.json
 └── package-lock.json
 src/
+├── config/
+│   └── firebaseConfig.js
 ├── contexts/
 │   └── CartContext.js
 ├── screens/
@@ -105,6 +140,7 @@ src/
 │   └── EditarFilmeScreen.js
 └── services/
     ├── api.js
+    ├── firestore.js
     └── tvmaze.js
 ```
 
@@ -122,6 +158,8 @@ src/
 - PostgreSQL
 - Neon
 - Render
+- Firebase
+- Cloud Firestore
 
 ## Como executar o aplicativo
 
@@ -224,4 +262,18 @@ Home / Cadastro / Edição / Exclusão
        PostgreSQL Neon
 ```
 
-As quatro atividades foram testadas com sucesso em dispositivo Android utilizando Expo Go.
+### Atividade 5
+
+```text
+Home / Cadastro / Edição / Exclusão
+              ↓
+         Firebase SDK
+              ↓
+       Cloud Firestore
+              ↓
+          onSnapshot
+              ↓
+    atualização em tempo real
+```
+
+As cinco atividades foram testadas com sucesso em dispositivo Android utilizando Expo Go.
