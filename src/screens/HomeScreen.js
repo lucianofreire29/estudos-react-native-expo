@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -6,33 +6,33 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
 
-import { listarFilmes } from '../services/api';
+import { observarFilmes } from "../services/firestore";
 
 export default function HomeScreen({ navigation }) {
   const [filmes, setFilmes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
-
-  async function carregarFilmes() {
-    try {
-      setCarregando(true);
-      setErro(null);
-
-      const dados = await listarFilmes();
-      setFilmes(dados);
-    } catch (e) {
-      setErro(e.message || 'Ocorreu um erro ao buscar os filmes.');
-    } finally {
-      setCarregando(false);
-    }
-  }
+  const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', carregarFilmes);
-    return unsubscribe;
-  }, [navigation]);
+    setCarregando(true);
+    setErro(null);
+
+    const unsubscribe = observarFilmes(
+      (dados) => {
+        setFilmes(dados);
+        setCarregando(false);
+      },
+      (e) => {
+        setErro(e.message || "Ocorreu um erro ao buscar os filmes.");
+        setCarregando(false);
+      },
+    );
+
+    return () => unsubscribe();
+  }, [tentativa]);
 
   if (carregando) {
     return (
@@ -47,8 +47,12 @@ export default function HomeScreen({ navigation }) {
     return (
       <View style={styles.estadoCentralizado}>
         <Text style={styles.erro}>Erro: {erro}</Text>
-        <TouchableOpacity style={styles.botaoRecarregar} onPress={carregarFilmes}>
-          <Text style={styles.textoBotao}>Recarregar</Text>
+
+        <TouchableOpacity
+          style={styles.botaoRecarregar}
+          onPress={() => setTentativa((valor) => valor + 1)}
+        >
+          <Text style={styles.textoBotao}>Tentar novamente</Text>
         </TouchableOpacity>
       </View>
     );
@@ -59,12 +63,14 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.cabecalho}>
         <View>
           <Text style={styles.titulo}>Lista de filmes</Text>
-          <Text style={styles.fonte}>Dados do PostgreSQL no Neon</Text>
+          <Text style={styles.fonte}>
+            Firebase Firestore — atualização em tempo real
+          </Text>
         </View>
 
         <TouchableOpacity
           style={styles.botaoCarrinho}
-          onPress={() => navigation.navigate('Carrinho')}
+          onPress={() => navigation.navigate("Carrinho")}
         >
           <Text style={styles.textoBotao}>Carrinho</Text>
         </TouchableOpacity>
@@ -73,13 +79,9 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.acoes}>
         <TouchableOpacity
           style={styles.botaoAcao}
-          onPress={() => navigation.navigate('CadastroFilme')}
+          onPress={() => navigation.navigate("CadastroFilme")}
         >
           <Text style={styles.textoBotao}>Cadastrar filme</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.botaoAcao} onPress={carregarFilmes}>
-          <Text style={styles.textoBotao}>Recarregar</Text>
         </TouchableOpacity>
       </View>
 
@@ -94,7 +96,7 @@ export default function HomeScreen({ navigation }) {
           renderItem={({ item }) => (
             <TouchableOpacity
               style={styles.card}
-              onPress={() => navigation.navigate('Detalhe', { filme: item })}
+              onPress={() => navigation.navigate("Detalhe", { filme: item })}
             >
               <Text style={styles.nomeFilme}>{item.titulo}</Text>
               <Text style={styles.info}>{item.genero}</Text>
@@ -112,59 +114,59 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   cabecalho: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     marginBottom: 12,
   },
   titulo: {
     fontSize: 26,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   fonte: {
     fontSize: 12,
     marginTop: 4,
   },
   botaoCarrinho: {
-    backgroundColor: '#1f6feb',
+    backgroundColor: "#1f6feb",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 8,
   },
   acoes: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 10,
     marginBottom: 14,
   },
   botaoAcao: {
-    backgroundColor: '#1f6feb',
+    backgroundColor: "#1f6feb",
     paddingVertical: 9,
     paddingHorizontal: 14,
     borderRadius: 8,
   },
   botaoRecarregar: {
-    backgroundColor: '#1f6feb',
+    backgroundColor: "#1f6feb",
     paddingVertical: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
     marginTop: 16,
   },
   textoBotao: {
-    color: '#ffffff',
-    fontWeight: 'bold',
+    color: "#ffffff",
+    fontWeight: "bold",
   },
   card: {
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
     padding: 16,
     marginBottom: 12,
     borderRadius: 10,
   },
   nomeFilme: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 6,
   },
   info: {
@@ -173,8 +175,8 @@ const styles = StyleSheet.create({
   },
   estadoCentralizado: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     padding: 24,
   },
   mensagemEstado: {
@@ -183,6 +185,6 @@ const styles = StyleSheet.create({
   },
   erro: {
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
 });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
   Alert,
   Button,
@@ -7,22 +7,22 @@ import {
   Text,
   TextInput,
   View,
-} from 'react-native';
-import { atualizarFilme } from '../services/api';
+} from "react-native";
+import { atualizarFilme } from "../services/firestore";
 
 export default function EditarFilmeScreen({ route, navigation }) {
   const { filme } = route.params;
 
-  const [titulo, setTitulo] = useState(filme.titulo ?? '');
-  const [genero, setGenero] = useState(filme.genero ?? '');
-  const [ano, setAno] = useState(String(filme.ano ?? ''));
-  const [nota, setNota] = useState(String(filme.nota ?? ''));
-  const [descricao, setDescricao] = useState(filme.descricao ?? '');
+  const [titulo, setTitulo] = useState(filme.titulo ?? "");
+  const [genero, setGenero] = useState(filme.genero ?? "");
+  const [ano, setAno] = useState(String(filme.ano ?? ""));
+  const [nota, setNota] = useState(String(filme.nota ?? ""));
+  const [descricao, setDescricao] = useState(filme.descricao ?? "");
   const [salvando, setSalvando] = useState(false);
 
   async function handleSalvar() {
     if (!titulo.trim()) {
-      Alert.alert('Atenção', 'Informe o título do filme.');
+      Alert.alert("Atenção", "Informe o título do filme.");
       return;
     }
 
@@ -33,14 +33,17 @@ export default function EditarFilmeScreen({ route, navigation }) {
         titulo: titulo.trim(),
         genero: genero.trim(),
         ano: ano ? Number(ano) : null,
-        nota: nota ? Number(nota.replace(',', '.')) : null,
+        nota: nota ? Number(nota.replace(",", ".")) : null,
         descricao: descricao.trim(),
       });
 
-      Alert.alert('Sucesso', 'Filme atualizado com sucesso.');
-      navigation.navigate('Home');
+      Alert.alert("Sucesso", "Filme atualizado com sucesso.");
+      navigation.navigate("Home");
     } catch (erro) {
-      Alert.alert('Erro', erro.message || 'Não foi possível atualizar o filme.');
+      Alert.alert(
+        "Erro",
+        erro.message || "Não foi possível atualizar o filme.",
+      );
     } finally {
       setSalvando(false);
     }
@@ -81,7 +84,7 @@ export default function EditarFilmeScreen({ route, navigation }) {
 
       <View style={styles.botao}>
         <Button
-          title={salvando ? 'Salvando...' : 'Salvar alterações'}
+          title={salvando ? "Salvando..." : "Salvar alterações"}
           onPress={handleSalvar}
           disabled={salvando}
         />
@@ -93,16 +96,16 @@ export default function EditarFilmeScreen({ route, navigation }) {
 const styles = StyleSheet.create({
   container: {
     padding: 20,
-    backgroundColor: '#ffffff',
+    backgroundColor: "#ffffff",
   },
   label: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 6,
   },
   input: {
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderRadius: 8,
     padding: 12,
     marginBottom: 16,
