@@ -8,7 +8,7 @@ import {
   View,
 } from 'react-native';
 
-import { listarFilmes } from '../services/tvmaze';
+import { listarFilmes } from '../services/api';
 
 export default function HomeScreen({ navigation }) {
   const [filmes, setFilmes] = useState([]);
@@ -30,8 +30,9 @@ export default function HomeScreen({ navigation }) {
   }
 
   useEffect(() => {
-    carregarFilmes();
-  }, []);
+    const unsubscribe = navigation.addListener('focus', carregarFilmes);
+    return unsubscribe;
+  }, [navigation]);
 
   if (carregando) {
     return (
@@ -58,7 +59,7 @@ export default function HomeScreen({ navigation }) {
       <View style={styles.cabecalho}>
         <View>
           <Text style={styles.titulo}>Lista de filmes</Text>
-          <Text style={styles.fonte}>Dados fornecidos por TVmaze</Text>
+          <Text style={styles.fonte}>Dados do PostgreSQL no Neon</Text>
         </View>
 
         <TouchableOpacity
@@ -73,21 +74,27 @@ export default function HomeScreen({ navigation }) {
         <Text style={styles.textoBotao}>Recarregar</Text>
       </TouchableOpacity>
 
-      <FlatList
-        data={filmes}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('Detalhe', { filme: item })}
-          >
-            <Text style={styles.nomeFilme}>{item.titulo}</Text>
-            <Text style={styles.info}>{item.genero}</Text>
-            <Text style={styles.info}>{item.ano}</Text>
-            <Text style={styles.info}>Nota: {item.nota}</Text>
-          </TouchableOpacity>
-        )}
-      />
+      {filmes.length === 0 ? (
+        <View style={styles.estadoCentralizado}>
+          <Text style={styles.mensagemEstado}>Nenhum filme cadastrado.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={filmes}
+          keyExtractor={(item) => String(item.id)}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              style={styles.card}
+              onPress={() => navigation.navigate('Detalhe', { filme: item })}
+            >
+              <Text style={styles.nomeFilme}>{item.titulo}</Text>
+              <Text style={styles.info}>{item.genero}</Text>
+              <Text style={styles.info}>{item.ano}</Text>
+              <Text style={styles.info}>Nota: {item.nota}</Text>
+            </TouchableOpacity>
+          )}
+        />
+      )}
     </View>
   );
 }
