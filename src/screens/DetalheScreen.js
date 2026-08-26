@@ -21,6 +21,13 @@ export default function DetalheScreen({ route, navigation }) {
       <View style={styles.botao}>
         <Button title="Adicionar" onPress={handleAdicionar} />
       </View>
+
+      <View style={styles.botao}>
+        <Button
+          title="Editar filme"
+          onPress={() => navigation.navigate('EditarFilme', { filme })}
+        />
+      </View>
     </View>
   );
 }
@@ -46,6 +53,6 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   botao: {
-    marginTop: 24,
+    marginTop: 16,
   },
 });
