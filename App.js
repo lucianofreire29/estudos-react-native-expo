@@ -5,6 +5,7 @@ import { CartProvider } from './src/contexts/CartContext';
 import HomeScreen from './src/screens/HomeScreen';
 import DetalheScreen from './src/screens/DetalheScreen';
 import CarrinhoScreen from './src/screens/CarrinhoScreen';
+import CadastroFilmeScreen from './src/screens/CadastroFilmeScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -27,6 +28,11 @@ export default function App() {
             name="Carrinho"
             component={CarrinhoScreen}
             options={{ title: 'Carrinho' }}
+          />
+          <Stack.Screen
+            name="CadastroFilme"
+            component={CadastroFilmeScreen}
+            options={{ title: 'Cadastrar filme' }}
           />
         </Stack.Navigator>
       </NavigationContainer>
