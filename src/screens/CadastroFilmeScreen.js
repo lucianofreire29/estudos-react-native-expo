@@ -6,12 +6,13 @@ import {
   Text,
   TextInput,
   TouchableOpacity,
-  View,
 } from "react-native";
 
+import { useAuth } from "../contexts/AuthContext";
 import { criarFilme } from "../services/firestore";
 
 export default function CadastroFilmeScreen({ navigation }) {
+  const { usuario } = useAuth();
   const [titulo, setTitulo] = useState("");
   const [genero, setGenero] = useState("");
   const [ano, setAno] = useState("");
@@ -25,16 +26,24 @@ export default function CadastroFilmeScreen({ navigation }) {
       return;
     }
 
+    if (!usuario?.uid) {
+      Alert.alert("Erro", "Usuário não autenticado.");
+      return;
+    }
+
     try {
       setSalvando(true);
 
-      await criarFilme({
-        titulo: titulo.trim(),
-        genero: genero.trim(),
-        ano: ano ? Number(ano) : null,
-        nota: nota ? Number(nota.replace(",", ".")) : null,
-        descricao: descricao.trim(),
-      });
+      await criarFilme(
+        {
+          titulo: titulo.trim(),
+          genero: genero.trim(),
+          ano: ano ? Number(ano) : null,
+          nota: nota ? Number(nota.replace(",", ".")) : null,
+          descricao: descricao.trim(),
+        },
+        usuario.uid,
+      );
 
       Alert.alert("Sucesso", "Filme cadastrado com sucesso.");
       navigation.navigate("Home");

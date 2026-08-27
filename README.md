@@ -1,6 +1,6 @@
 # App de Filmes — React Native + Expo
 
-Projeto desenvolvido como exercício do curso utilizando **React Native**, **Expo**, **React Navigation**, **Context API**, consumo de **API REST**, integração com banco de dados PostgreSQL no **Neon** e persistência em tempo real com **Firebase Firestore**.
+Projeto desenvolvido como exercício do curso utilizando **React Native**, **Expo**, **React Navigation**, **Context API**, consumo de **API REST**, integração com banco de dados PostgreSQL no **Neon**, persistência em tempo real com **Firebase Firestore** e autenticação com **Firebase Authentication**.
 
 ## Atividade 1 — Navegação entre telas
 
@@ -118,10 +118,52 @@ Atualização em tempo real
 
 Na Atividade 4, utilizando o Neon, foi necessário criar uma API própria com Node.js e Express para fazer a comunicação entre o aplicativo e o banco PostgreSQL. No Firestore, o aplicativo consegue acessar o banco diretamente através do SDK do Firebase, tornando a implementação mais simples. Outra diferença percebida foi a atualização em tempo real com `onSnapshot`, pois as alterações feitas no Firestore aparecem automaticamente no aplicativo, enquanto na API com Neon era necessário realizar uma nova requisição para atualizar os dados.
 
+## Atividade 6 — App completo com login
+
+A sexta atividade integra **Firebase Authentication**, controle de sessão com **AuthContext** e persistência dos filmes associada ao usuário autenticado.
+
+### Funcionalidades
+
+- Cadastro de usuário com e-mail e senha;
+- Retorno ao Login após a criação da conta;
+- Login com Firebase Authentication;
+- Controle do usuário autenticado através do `AuthContext`;
+- Proteção das telas principais para usuários autenticados;
+- Logout através do botão **Sair**;
+- Cada filme é salvo com o `uid` do usuário autenticado;
+- A listagem utiliza o `uid` para mostrar somente os filmes pertencentes ao usuário logado;
+- Atualização em tempo real mantida com `onSnapshot`;
+- Regras de segurança do Firestore limitando leitura, criação, edição e exclusão aos próprios dados.
+
+### Fluxo da Atividade 6
+
+```text
+Cadastro
+   ↓
+Firebase Authentication
+   ↓
+Login
+   ↓
+AuthContext
+   ↓
+Usuário autenticado
+   ↓
+Firestore + uid
+   ↓
+Filmes do próprio usuário
+```
+
+### Segurança do Firestore
+
+As regras utilizadas exigem autenticação e conferem se o `uid` salvo no documento pertence ao usuário autenticado. O arquivo `firestore.rules` registra essas regras no repositório para consulta.
+
+O funcionamento foi validado com duas contas diferentes: cada usuário visualizou apenas os próprios filmes, e as operações de cadastro, edição e exclusão continuaram funcionando após a publicação das regras.
+
 ## Estrutura principal
 
 ```text
 App.js
+firestore.rules
 backend/
 ├── .gitignore
 ├── index.js
@@ -131,8 +173,11 @@ src/
 ├── config/
 │   └── firebaseConfig.js
 ├── contexts/
+│   ├── AuthContext.js
 │   └── CartContext.js
 ├── screens/
+│   ├── LoginScreen.js
+│   ├── CadastroUsuarioScreen.js
 │   ├── HomeScreen.js
 │   ├── DetalheScreen.js
 │   ├── CarrinhoScreen.js
@@ -159,6 +204,7 @@ src/
 - Neon
 - Render
 - Firebase
+- Firebase Authentication
 - Cloud Firestore
 
 ## Como executar o aplicativo
@@ -167,6 +213,17 @@ Instale as dependências:
 
 ```bash
 npm install
+```
+
+Crie o arquivo `.env.local` a partir do exemplo `.env.example` e preencha os valores da configuração Web do seu projeto Firebase.
+
+```text
+EXPO_PUBLIC_FIREBASE_API_KEY=
+EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN=
+EXPO_PUBLIC_FIREBASE_PROJECT_ID=
+EXPO_PUBLIC_FIREBASE_STORAGE_BUCKET=
+EXPO_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+EXPO_PUBLIC_FIREBASE_APP_ID=
 ```
 
 Inicie o projeto:
@@ -276,4 +333,20 @@ Home / Cadastro / Edição / Exclusão
     atualização em tempo real
 ```
 
-As cinco atividades foram testadas com sucesso em dispositivo Android utilizando Expo Go.
+### Atividade 6
+
+```text
+Cadastro / Login
+       ↓
+Firebase Authentication
+       ↓
+   AuthContext
+       ↓
+usuário autenticado
+       ↓
+Firestore filtrado por uid
+       ↓
+CRUD dos próprios filmes
+```
+
+As seis atividades foram testadas com sucesso em dispositivo Android utilizando Expo Go.

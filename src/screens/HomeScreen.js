@@ -8,19 +8,26 @@ import {
   View,
 } from "react-native";
 
+import { useAuth } from "../contexts/AuthContext";
 import { observarFilmes } from "../services/firestore";
 
 export default function HomeScreen({ navigation }) {
+  const { usuario, sair } = useAuth();
   const [filmes, setFilmes] = useState([]);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState(null);
   const [tentativa, setTentativa] = useState(0);
 
   useEffect(() => {
+    if (!usuario?.uid) {
+      return;
+    }
+
     setCarregando(true);
     setErro(null);
 
     const unsubscribe = observarFilmes(
+      usuario.uid,
       (dados) => {
         setFilmes(dados);
         setCarregando(false);
@@ -32,7 +39,7 @@ export default function HomeScreen({ navigation }) {
     );
 
     return () => unsubscribe();
-  }, [tentativa]);
+  }, [tentativa, usuario?.uid]);
 
   if (carregando) {
     return (
@@ -61,19 +68,26 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.cabecalho}>
-        <View>
+        <View style={styles.infoUsuario}>
           <Text style={styles.titulo}>Lista de filmes</Text>
           <Text style={styles.fonte}>
             Firebase Firestore — atualização em tempo real
           </Text>
+          <Text style={styles.email}>{usuario?.email}</Text>
         </View>
 
-        <TouchableOpacity
-          style={styles.botaoCarrinho}
-          onPress={() => navigation.navigate("Carrinho")}
-        >
-          <Text style={styles.textoBotao}>Carrinho</Text>
-        </TouchableOpacity>
+        <View style={styles.botoesCabecalho}>
+          <TouchableOpacity
+            style={styles.botaoCarrinho}
+            onPress={() => navigation.navigate("Carrinho")}
+          >
+            <Text style={styles.textoBotao}>Carrinho</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.botaoSair} onPress={sair}>
+            <Text style={styles.textoBotao}>Sair</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.acoes}>
@@ -87,7 +101,9 @@ export default function HomeScreen({ navigation }) {
 
       {filmes.length === 0 ? (
         <View style={styles.estadoCentralizado}>
-          <Text style={styles.mensagemEstado}>Nenhum filme cadastrado.</Text>
+          <Text style={styles.mensagemEstado}>
+            Nenhum filme cadastrado para este usuário.
+          </Text>
         </View>
       ) : (
         <FlatList
@@ -118,9 +134,13 @@ const styles = StyleSheet.create({
   },
   cabecalho: {
     flexDirection: "row",
-    alignItems: "center",
+    alignItems: "flex-start",
     justifyContent: "space-between",
     marginBottom: 12,
+    gap: 12,
+  },
+  infoUsuario: {
+    flex: 1,
   },
   titulo: {
     fontSize: 26,
@@ -130,8 +150,21 @@ const styles = StyleSheet.create({
     fontSize: 12,
     marginTop: 4,
   },
+  email: {
+    fontSize: 12,
+    marginTop: 4,
+  },
+  botoesCabecalho: {
+    gap: 8,
+  },
   botaoCarrinho: {
     backgroundColor: "#1f6feb",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    borderRadius: 8,
+  },
+  botaoSair: {
+    backgroundColor: "#555555",
     paddingVertical: 10,
     paddingHorizontal: 14,
     borderRadius: 8,
@@ -182,6 +215,7 @@ const styles = StyleSheet.create({
   mensagemEstado: {
     marginTop: 12,
     fontSize: 16,
+    textAlign: "center",
   },
   erro: {
     fontSize: 16,
