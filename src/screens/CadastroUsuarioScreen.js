@@ -10,7 +10,7 @@ import {
 
 import { useAuth } from "../contexts/AuthContext";
 
-export default function CadastroUsuarioScreen() {
+export default function CadastroUsuarioScreen({ navigation }) {
   const { cadastrar } = useAuth();
   const [email, setEmail] = useState("");
   const [senha, setSenha] = useState("");
@@ -38,6 +38,7 @@ export default function CadastroUsuarioScreen() {
       setCarregando(true);
       setErro(null);
       await cadastrar(email.trim(), senha);
+      navigation.replace("Login");
     } catch (e) {
       if (e.code === "auth/email-already-in-use") {
         setErro("Este e-mail já está cadastrado.");
