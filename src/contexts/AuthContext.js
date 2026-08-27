@@ -13,6 +13,7 @@ const AuthContext = createContext();
 export function AuthProvider({ children }) {
   const [usuario, setUsuario] = useState(null);
   const [carregando, setCarregando] = useState(true);
+  const [cadastroEmAndamento, setCadastroEmAndamento] = useState(false);
 
   useEffect(() => {
     const cancelar = onAuthStateChanged(auth, (user) => {
@@ -23,8 +24,16 @@ export function AuthProvider({ children }) {
     return cancelar;
   }, []);
 
-  function cadastrar(email, senha) {
-    return createUserWithEmailAndPassword(auth, email, senha);
+  async function cadastrar(email, senha) {
+    setCadastroEmAndamento(true);
+
+    try {
+      const credencial = await createUserWithEmailAndPassword(auth, email, senha);
+      await signOut(auth);
+      return credencial;
+    } finally {
+      setCadastroEmAndamento(false);
+    }
   }
 
   function entrar(email, senha) {
@@ -37,7 +46,14 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider
-      value={{ usuario, carregando, cadastrar, entrar, sair }}
+      value={{
+        usuario,
+        carregando,
+        cadastroEmAndamento,
+        cadastrar,
+        entrar,
+        sair,
+      }}
     >
       {children}
     </AuthContext.Provider>
