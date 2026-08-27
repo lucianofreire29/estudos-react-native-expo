@@ -15,7 +15,7 @@ import CadastroUsuarioScreen from "./src/screens/CadastroUsuarioScreen";
 const Stack = createNativeStackNavigator();
 
 function Rotas() {
-  const { usuario, carregando } = useAuth();
+  const { usuario, carregando, cadastroEmAndamento } = useAuth();
 
   if (carregando) {
     return (
@@ -27,7 +27,7 @@ function Rotas() {
     );
   }
 
-  if (!usuario) {
+  if (!usuario || cadastroEmAndamento) {
     return (
       <Stack.Navigator initialRouteName="Login">
         <Stack.Screen
