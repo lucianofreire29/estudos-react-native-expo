@@ -5,15 +5,19 @@ import {
   deleteDoc,
   doc,
   onSnapshot,
+  query,
+  where,
 } from "firebase/firestore";
 
 import { db } from "../config/firebaseConfig";
 
 const filmesCollection = collection(db, "filmes");
 
-export function observarFilmes(callback, callbackErro) {
+export function observarFilmes(uid, callback, callbackErro) {
+  const consulta = query(filmesCollection, where("uid", "==", uid));
+
   return onSnapshot(
-    filmesCollection,
+    consulta,
     (snapshot) => {
       const filmes = snapshot.docs.map((documento) => ({
         id: documento.id,
@@ -32,8 +36,11 @@ export function observarFilmes(callback, callbackErro) {
   );
 }
 
-export async function criarFilme(filme) {
-  return addDoc(filmesCollection, filme);
+export async function criarFilme(filme, uid) {
+  return addDoc(filmesCollection, {
+    ...filme,
+    uid,
+  });
 }
 
 export async function atualizarFilme(id, filme) {
